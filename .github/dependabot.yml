@@ -12,14 +12,15 @@ updates:
       - "npm"
     reviewers:
       - "mariobehling"
-    security-updates: true
     groups:
       frontend:
         patterns:
-          - "react*"
+          - "react"
           - "react-dom"
-          - "react-*"
           - "react-grid-layout"
+          - "react-resize-detector"
+          - "react-modal"
+          - "react-devtools"
           - "d3-*"
           - "three"
           - "jquery"
@@ -39,7 +40,6 @@ updates:
       - "python"
     reviewers:
       - "mariobehling"
-    security-updates: true
     groups:
       core-python:
         patterns:
@@ -48,7 +48,7 @@ updates:
           - "requests"
           - "tornado"
           - "networkx"
-          - "pillow*"
+          - "pillow"
         update-types: ["minor", "patch"]
       devdeps:
         dependency-type: "development"
@@ -65,4 +65,3 @@ updates:
       - "github-actions"
     reviewers:
       - "mariobehling"
-    security-updates: true
