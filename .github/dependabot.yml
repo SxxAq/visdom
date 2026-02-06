@@ -28,31 +28,6 @@ updates:
       devdeps:
         dependency-type: "development"
 
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "python"
-    reviewers:
-      - "mariobehling"
-    groups:
-      core-python:
-        patterns:
-          - "numpy"
-          - "scipy"
-          - "requests"
-          - "tornado"
-          - "networkx"
-          - "pillow"
-        update-types: ["minor", "patch"]
-      devdeps:
-        dependency-type: "development"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
