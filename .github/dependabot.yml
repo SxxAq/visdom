@@ -15,7 +15,7 @@ updates:
     groups:
       frontend:
         patterns:
-          - "react"
+          - "react-*"
           - "react-dom"
           - "react-grid-layout"
           - "react-resize-detector"
