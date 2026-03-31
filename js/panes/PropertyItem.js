@@ -10,7 +10,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 function EditablePropertyText(props) {
-  const { value, validateHandler, submitHandler, blurStopPropagation, propId } = props;
+  const {
+    value,
+    validateHandler,
+    submitHandler,
+    blurStopPropagation,
+    propId,
+  } = props;
 
   // state varibles
   // --------------
