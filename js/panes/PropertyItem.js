@@ -10,7 +10,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 function EditablePropertyText(props) {
-  const { value, validateHandler, submitHandler, blurStopPropagation } = props;
+  const { value, validateHandler, submitHandler, blurStopPropagation, propId } = props;
 
   // state varibles
   // --------------
@@ -67,6 +67,7 @@ function EditablePropertyText(props) {
       onKeyPress={handleKeyPress}
       onBlur={onBlur}
       onFocus={onFocus}
+      aria-label={`${propId || 'property'} value`}
     />
   );
 }
@@ -85,6 +86,7 @@ function PropertyItem(props) {
     case 'text':
       return (
         <EditablePropertyText
+          propId={propId}
           value={value}
           submitHandler={(value) => updateValue(propId, value)}
           blurStopPropagation={blurStopPropagation}
@@ -93,6 +95,7 @@ function PropertyItem(props) {
     case 'number':
       return (
         <EditablePropertyText
+          propId={propId}
           value={value}
           submitHandler={(value) => updateValue(propId, value)}
           validateHandler={(value) => value.match(/^[0-9]*([.][0-9]*)?$/i)}
@@ -115,6 +118,7 @@ function PropertyItem(props) {
             type="checkbox"
             checked={value}
             onChange={() => updateValue(propId, !value)}
+            aria-label={`toggle ${propId}`}
           />
           &nbsp;
         </label>

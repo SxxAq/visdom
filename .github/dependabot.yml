@@ -13,20 +13,10 @@ updates:
     reviewers:
       - "mariobehling"
     groups:
-      frontend:
+      all:
         patterns:
-          - "react-*"
-          - "react-dom"
-          - "react-grid-layout"
-          - "react-resize-detector"
-          - "react-modal"
-          - "react-devtools"
-          - "d3-*"
-          - "three"
-          - "jquery"
+          - "*"
         update-types: ["minor", "patch"]
-      devdeps:
-        dependency-type: "development"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -40,3 +30,8 @@ updates:
       - "github-actions"
     reviewers:
       - "mariobehling"
+    groups:
+      all:
+        patterns:
+          - "*"
+        update-types: ["minor", "patch"]
