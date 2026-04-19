@@ -2010,6 +2010,7 @@ class Visdom(object):
         opts["rownames"] = labels
         opts["show_counts"] = opts.get("show_counts", True)
         opts["show_percent"] = opts.get("show_percent", False)
+        opts["pane_type"] = opts.get("pane_type", "confusion_matrix")
 
         _title2str(opts)
         _assert_opts(opts)

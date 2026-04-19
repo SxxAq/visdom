@@ -177,7 +177,11 @@ def window(args):
         uid = get_new_window_id()
     opts = args.get("opts", {})
 
-    ptype = args["data"][0]["type"]
+    ptype = (
+        args.get("pane_type")
+        or opts.get("pane_type")
+        or args["data"][0]["type"]
+    )
 
     p = {
         "command": "window",
@@ -220,6 +224,9 @@ def window(args):
             }
         )
         p["content"]["has_previous"] = False
+    elif ptype == "confusion_matrix":
+        p["content"] = {"data": args["data"], "layout": args["layout"]}
+        p["type"] = ptype
     else:
         p["content"] = {"data": args["data"], "layout": args["layout"]}
         p["type"] = "plot"
