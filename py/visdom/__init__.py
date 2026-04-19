@@ -1921,6 +1921,165 @@ class Visdom(object):
         return self._send(data_to_send, endpoint=endpoint)
 
     @pytorch_wrap
+    def confusion_matrix(
+        self,
+        y_true=None,
+        y_pred=None,
+        cm=None,
+        labels=None,
+        normalize=None,
+        win=None,
+        env=None,
+        update=None,
+        opts=None,
+    ):
+        """
+        This function draws a confusion matrix as a heatmap. It takes either
+        `y_true` and `y_pred` vectors or a precomputed confusion matrix `cm`.
+
+        `normalize` controls normalization:
+        - None: raw counts
+        - 'true': normalize each row (true class)
+        - 'pred': normalize each column (predicted class)
+        - 'all' : normalize by total count
+
+        The following `opts` are supported:
+
+        - `opts.colormap`: colormap (`string`; default = `'Viridis'`)
+        - `opts.xmin`    : clip minimum value (`number`; default = `cm:min()`)
+        - `opts.xmax`    : clip maximum value (`number`; default = `cm:max()`)
+        - `opts.xlabel`  : x-axis label (`string`; default = `'Predicted'`)
+        - `opts.ylabel`  : y-axis label (`string`; default = `'True'`)
+        - `opts.title`   : plot title (`string`; default = `'Confusion Matrix'`)
+        - `opts.show_counts`: show counts in cells (`boolean`; default = `True`)
+        - `opts.show_percent`: show percents in cells (`boolean`; default = `False`)
+        """
+        valid_update_values = [None, "replace", "remove"]
+        assert (
+            update in valid_update_values
+        ), "update needs to take one of the following values: %s" % ", ".join(
+            "'%s'" % str(s) if s is not None else "None" for s in valid_update_values
+        )
+
+        if update == "remove":
+            assert win is not None
+            data_to_send = {
+                "data": [],
+                "delete": True,
+                "win": win,
+                "eid": env,
+            }
+            return self._send(data_to_send, endpoint="update")
+
+        assert (cm is not None) or (
+            y_true is not None and y_pred is not None
+        ), "must specify cm or (y_true, y_pred)"
+
+        if cm is None:
+            y_true = np.ravel(y_true)
+            y_pred = np.ravel(y_pred)
+            assert y_true.shape == y_pred.shape, "y_true and y_pred should match"
+
+            if labels is None:
+                labels = np.unique(np.concatenate([y_true, y_pred]))
+            labels = list(labels)
+
+            index = {label: i for i, label in enumerate(labels)}
+            cm = np.zeros((len(labels), len(labels)), dtype=np.int64)
+            for t, p in zip(y_true, y_pred):
+                cm[index[t], index[p]] += 1
+        else:
+            cm = np.asarray(cm)
+            assert cm.ndim == 2 and cm.shape[0] == cm.shape[1], (
+                "cm should be a square 2D matrix"
+            )
+            if labels is None:
+                labels = list(range(cm.shape[0]))
+            else:
+                labels = list(labels)
+            assert len(labels) == cm.shape[0], (
+                "number of labels should match size of cm"
+            )
+
+        opts = {} if opts is None else opts
+        opts["colormap"] = opts.get("colormap", "Viridis")
+        opts["xlabel"] = opts.get("xlabel", "Predicted")
+        opts["ylabel"] = opts.get("ylabel", "True")
+        opts["title"] = opts.get("title", "Confusion Matrix")
+        opts["columnnames"] = labels
+        opts["rownames"] = labels
+        opts["show_counts"] = opts.get("show_counts", True)
+        opts["show_percent"] = opts.get("show_percent", False)
+
+        _title2str(opts)
+        _assert_opts(opts)
+
+        values = cm.astype(float, copy=False)
+        if normalize is not None:
+            if normalize == "true":
+                denom = values.sum(axis=1, keepdims=True)
+            elif normalize == "pred":
+                denom = values.sum(axis=0, keepdims=True)
+            elif normalize == "all":
+                denom = values.sum()
+            else:
+                raise ValueError("normalize must be one of: None, 'true', 'pred', 'all'")
+
+            if normalize == "all":
+                if denom == 0:
+                    values = np.zeros_like(values)
+                else:
+                    values = values / denom
+            else:
+                denom = np.where(denom == 0, 1.0, denom)
+                values = values / denom
+
+        text = None
+        texttemplate = None
+        if opts["show_percent"]:
+            if normalize is None:
+                total = values.sum()
+                if total == 0:
+                    percent_values = np.zeros_like(values)
+                else:
+                    percent_values = values / total
+            else:
+                percent_values = values
+            text = np.round(percent_values * 100.0, 2).tolist()
+            texttemplate = "%{text}%"
+        elif opts["show_counts"]:
+            text = cm.astype(int, copy=False).tolist()
+            texttemplate = "%{text}"
+
+        data = [
+            {
+                "z": nan2none(values.tolist()),
+                "x": labels,
+                "y": labels,
+                "zmin": opts.get("xmin"),
+                "zmax": opts.get("xmax"),
+                "type": "heatmap",
+                "colorscale": opts.get("colormap"),
+                "text": text,
+                "texttemplate": texttemplate,
+                "hovertemplate": "True: %{y}<br>Pred: %{x}<br>Value: %{z}<extra></extra>",
+            }
+        ]
+
+        data_to_send = {
+            "data": data,
+            "win": win,
+            "eid": env,
+            "layout": _opts2layout(opts) if update is None else {},
+            "opts": opts,
+        }
+        endpoint = "events"
+        if update:
+            endpoint = "update"
+
+        return self._send(data_to_send, endpoint=endpoint)
+
+    @pytorch_wrap
     def bar(self, X, Y=None, win=None, env=None, opts=None):
         """
         This function draws a regular, stacked, or grouped bar plot. It takes as

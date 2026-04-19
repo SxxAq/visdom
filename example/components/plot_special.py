@@ -46,4 +46,19 @@ def plot_special_graph(viz, env, args):
     
     viz.graph(edges, edgeLabels, nodeLabels, opts = {"showEdgeLabels" : True, "showVertexLabels" : True, "scheme" : "different", "directed" : False}, env=env)
 
+# confusion matrix
+def plot_special_confusion_matrix(viz, env, args):
+    labels = ["cat", "dog", "fish", "bird"]
+    y_true = np.random.choice(labels, size=200)
+    y_pred = np.random.choice(labels, size=200)
+    title = args[0] if len(args) > 0 else None
+    viz.confusion_matrix(
+        y_true=y_true,
+        y_pred=y_pred,
+        labels=labels,
+        normalize="true",
+        opts=dict(title=title, show_percent=True, show_counts=False),
+        env=env,
+    )
+
 
