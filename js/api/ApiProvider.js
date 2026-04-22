@@ -135,6 +135,7 @@ const ApiProvider = ({ children }) => {
         break;
 
       default:
+        // eslint-disable-next-line no-console
         console.error('unrecognized command', cmd);
     }
   };
