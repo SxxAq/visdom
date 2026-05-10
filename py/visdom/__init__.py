@@ -1991,6 +1991,17 @@ class Visdom(object):
             labels = list(labels)
 
             index = {label: i for i, label in enumerate(labels)}
+            unknown = []
+            seen = set()
+            for value in np.concatenate([y_true, y_pred]):
+                if value not in index and value not in seen:
+                    unknown.append(value)
+                    seen.add(value)
+            if unknown:
+                raise ValueError(
+                    "labels is missing values: %s"
+                    % ", ".join(str(value) for value in unknown)
+                )
             cm = np.zeros((len(labels), len(labels)), dtype=np.int64)
             for t, p in zip(y_true, y_pred):
                 cm[index[t], index[p]] += 1
@@ -2084,6 +2095,8 @@ class Visdom(object):
         }
         endpoint = "events"
         if update:
+            data_to_send["append"] = False
+            data_to_send["updateDir"] = update
             endpoint = "update"
 
         return self._send(data_to_send, endpoint=endpoint)

@@ -4,7 +4,7 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Optional, List, Any, Union, Mapping, overload, Text
+from typing import Optional, List, Any, Union, Mapping, overload, Text, Literal
 
 ### Type aliases for commonly-used types.
 # For optional 'options' parameters.
@@ -12,6 +12,7 @@ from typing import Optional, List, Any, Union, Mapping, overload, Text
 # See  http://mypy.readthedocs.io/en/latest/more_types.html#typeddict.
 _OptOps = Optional[Mapping[Text, Any]]
 _OptStr = Optional[Text]  # For optional string parameters, like 'window' and 'env'.
+_NormalizeStr = Optional[Literal["true", "pred", "all"]]
 
 # No widely-deployed stubs exist at the moment for torch or numpy. When they are available, the correct type of the tensor-like inputs
 # to the plotting commands should be
@@ -154,11 +155,11 @@ class Visdom:
     ) -> _SendReturn: ...
     def confusion_matrix(
         self,
-        y_true: Optional[Tensor] = ...,
-        y_pred: Optional[Tensor] = ...,
-        cm: Optional[Tensor] = ...,
+        y_true: Optional[Any] = ...,
+        y_pred: Optional[Any] = ...,
+        cm: Optional[Any] = ...,
         labels: Optional[List[Any]] = ...,
-        normalize: _OptStr = ...,
+        normalize: _NormalizeStr = ...,
         win: _OptStr = ...,
         env: _OptStr = ...,
         update: _OptStr = ...,

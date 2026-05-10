@@ -175,7 +175,11 @@ def window(args):
         uid = get_new_window_id()
     opts = args.get("opts", {})
 
-    ptype = args.get("pane_type") or opts.get("pane_type") or args["data"][0]["type"]
+    explicit_ptype = args.get("pane_type") or opts.get("pane_type")
+    if explicit_ptype == "confusion_matrix":
+        ptype = explicit_ptype
+    else:
+        ptype = args["data"][0]["type"]
 
     p = {
         "command": "window",
