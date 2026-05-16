@@ -279,6 +279,12 @@ const ApiProvider = ({ children }) => {
     });
   };
 
+  const sendSaveAll = () => {
+    sendSocketMessage({
+      cmd: 'save_all',
+    });
+  };
+
   // Update the pane layout item in the backend.
   const sendPaneLayoutUpdate = (
     envID,
@@ -340,6 +346,7 @@ const ApiProvider = ({ children }) => {
         sendPaneClose,
         sendPaneLayoutUpdate,
         sendPaneMessage,
+        sendSaveAll,
         sessionInfo,
         setConnected,
         toggleOnlineState,
